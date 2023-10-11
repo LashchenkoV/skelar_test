@@ -6,14 +6,24 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "ext-curl": "*",
+        "ext-gettext": "*",
+        "ext-mbstring": "*",
+        "ext-openssl": "*",
+        "ext-pdo": "*",
+        "ext-sodium": "*",
+        "ext-tokenizer": "*",
         "guzzlehttp/guzzle": "^7.2",
         "inertiajs/inertia-laravel": "^0.6.8",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
-        "tightenco/ziggy": "^1.0"
+        "tightenco/ziggy": "^1.0",
+        "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {
+        "ext-intl": "*",
+        "ext-json": "*",
         "fakerphp/faker": "^1.9.1",
         "laravel/breeze": "^1.25",
         "laravel/pint": "^1.0",
@@ -31,9 +41,7 @@
         }
     },
     "autoload-dev": {
-        "psr-4": {
-            "Tests\\": "tests/"
-        }
+        "psr-4": {}
     },
     "scripts": {
         "post-autoload-dump": [
@@ -53,6 +61,18 @@
     "extra": {
         "laravel": {
             "dont-discover": []
+        },
+        "merge-plugin": {
+            "include": [
+                "app/Ship/composer.json",
+                "app/Containers/*/*/composer.json"
+            ],
+            "recurse": true,
+            "replace": false,
+            "merge-dev": true,
+            "merge-extra": false,
+            "merge-extra-deep": false,
+            "merge-scripts": true
         }
     },
     "config": {
@@ -61,7 +81,9 @@
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
-            "php-http/discovery": true
+            "php-http/discovery": true,
+            "wikimedia/composer-merge-plugin": true,
+            "apiato/container-installer": true
         }
     },
     "minimum-stability": "stable",

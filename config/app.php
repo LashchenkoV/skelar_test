@@ -16,7 +16,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'Apiato'),
 
     /*
     |--------------------------------------------------------------------------
@@ -158,16 +158,13 @@ return [
     'providers' => ServiceProvider::defaultProviders()->merge([
         /*
          * Package Service Providers...
+         * NOTE: all packages service providers must be registered inside their container's main service providers.
          */
 
         /*
          * Application Service Providers...
+         * NOTE: all service providers must be registered inside their container's main service providers.
          */
-        App\Providers\AppServiceProvider::class,
-        App\Providers\AuthServiceProvider::class,
-        // App\Providers\BroadcastServiceProvider::class,
-        App\Providers\EventServiceProvider::class,
-        App\Providers\RouteServiceProvider::class,
     ])->toArray(),
 
     /*
