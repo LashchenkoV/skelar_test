@@ -1,17 +1,15 @@
 <script setup>
-import {ref} from 'vue';
 import MainMenu from "@/Components/MainMenu.vue";
-
-const showingNavigationDropdown = ref(false);
 
 </script>
 
 <template>
-  <main-menu></main-menu>
-  <div class="min-h-screen bg-gray-100">
-    <!-- Page Content -->
-    <main>
-      <slot/>
-    </main>
-  </div>
+  <v-app>
+    <main-menu></main-menu>
+    <v-main class="min-h-screen bg-gray-100">
+      <v-container class="px-7">
+        <slot/>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>

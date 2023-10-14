@@ -7,6 +7,7 @@ use Apiato\Core\Middlewares\Http\ProfilerMiddleware;
 use Apiato\Core\Middlewares\Http\ValidateJsonContent;
 use App\Ship\Middlewares\Authenticate;
 use App\Ship\Middlewares\EncryptCookies;
+use App\Ship\Middlewares\HandleInertiaRequests;
 use App\Ship\Middlewares\PreventRequestsDuringMaintenance;
 use App\Ship\Middlewares\TrimStrings;
 use App\Ship\Middlewares\TrustProxies;
@@ -26,6 +27,7 @@ use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
 class HttpKernel extends LaravelHttpKernel
 {
@@ -59,11 +61,12 @@ class HttpKernel extends LaravelHttpKernel
             StartSession::class,
             ShareErrorsFromSession::class,
             VerifyCsrfToken::class,
-            \App\Ship\Middlewares\HandleInertiaRequests::class,
+            HandleInertiaRequests::class,
             SubstituteBindings::class,
         ],
 
         'api' => [
+             EnsureFrontendRequestsAreStateful::class,
             // Note: The "throttle" Middleware is registered by the RoutesLoaderTrait in the Core
             // 'throttle:api',
             SubstituteBindings::class,
