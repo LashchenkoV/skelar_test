@@ -3,11 +3,13 @@
 namespace App\Containers\AppSection\Product\UI\API\Controllers;
 
 use App\Containers\AppSection\Product\Actions\CreateProductAction;
+use App\Containers\AppSection\Product\Actions\DeleteProductAction;
 use App\Containers\AppSection\Product\Actions\GetFilteredPaginatedProductsAction;
 use App\Containers\AppSection\Product\UI\API\Requests\CreateProductRequest;
 use App\Containers\AppSection\Product\UI\API\Requests\GetFilteredProductsRequest;
 use App\Containers\AppSection\Product\UI\API\Transformers\ProductTransformer;
 use App\Ship\Parents\Controllers\ApiController;
+use Illuminate\Http\JsonResponse;
 
 class ProductController extends ApiController
 {
@@ -25,5 +27,12 @@ class ProductController extends ApiController
 
         // Just JsonResources can be used also
         return $this->transform($product, ProductTransformer::class);
+    }
+
+    public function deleteProduct(int $id): JsonResponse
+    {
+        return $this->json([
+            'result' => app(DeleteProductAction::class)->run($id)
+        ]);
     }
 }

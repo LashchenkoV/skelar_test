@@ -48,10 +48,10 @@ import CreateProductForm from "@/Components/Product/CreateProductForm.vue";
         class="elevation-1"
         @update:options="loadItems"
     >
-      <template v-slot:item.actions="{ value }">
+      <template v-slot:item.actions="{ item }">
         <v-row>
-          <v-col style="padding: 10px 5px"><v-btn @click="edit(item.id)" color="primary" size="small">Edit</v-btn></v-col>
-          <v-col style="padding: 10px 5px"><v-btn @click="remove(item.id)" color="red" size="small">Remove</v-btn></v-col>
+          <v-col style="padding: 10px 5px"><v-btn @click="edit(item)" color="primary" size="small">Edit</v-btn></v-col>
+          <v-col style="padding: 10px 5px"><v-btn @click="remove(item)" color="red" size="small">Remove</v-btn></v-col>
         </v-row>
       </template>
     </v-data-table>
@@ -60,11 +60,25 @@ import CreateProductForm from "@/Components/Product/CreateProductForm.vue";
         @productCreated="handleProductCreated"
         ref="createFormOpened"
     ></create-product-form>
+
+    <v-dialog v-model="dialogDelete" max-width="500px">
+      <v-card>
+        <v-card-title class="text-h5">Are you sure you want to delete this item?</v-card-title>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue-darken-1" variant="text" @click="closeDelete">Cancel</v-btn>
+          <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm">OK</v-btn>
+          <v-spacer></v-spacer>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </AuthenticatedLayout>
 </template>
 
 <script>
 import { VDataTable } from 'vuetify/labs/VDataTable'
+import { useSnackbar } from "@/Components/Global/Snackbar.vue";
+const { showSnackbar } = useSnackbar();
 
 export default {
   components: { VDataTable },
@@ -87,9 +101,34 @@ export default {
     loading: true,
     name: '',
     quantity: '',
+    dialogDelete: false,
+    removeItem: {},
   }),
 
   methods: {
+    deleteItemConfirm () {
+      axios.delete(route('admin.product.delete', {id: this.removeItem.id}))
+          .then((response) => {
+            if (response.data.result) {
+              this.loadItems();
+              this.closeDelete()
+              this.removeItem = {};
+
+              return;
+            }
+
+            showSnackbar("Some error occurs while deleting the product.", 'error');
+          })
+          .catch((error) => {
+            console.log(error)
+            showSnackbar(error.response.data.message, 'error');
+          })
+    },
+
+    closeDelete () {
+      this.dialogDelete = false
+    },
+
     openCreateForm() {
       this.$refs.createFormOpened.openDialog();
     },
@@ -112,12 +151,13 @@ export default {
           .finally(() => this.loading = false)
     },
 
-    edit(id) {
+    edit(item) {
 
     },
 
-    remove(id) {
-
+    remove(item) {
+      this.removeItem = item;
+      this.dialogDelete = true;
     },
   },
 }
