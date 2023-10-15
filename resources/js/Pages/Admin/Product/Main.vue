@@ -2,6 +2,7 @@
 
 import {Head} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import CreateProductForm from "@/Components/Product/CreateProductForm.vue";
 </script>
 
 <template>
@@ -27,11 +28,15 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
             density="compact"
         ></v-text-field>
       </v-col>
-      <v-col class="d-flex justify-center">
+      <v-col class="d-flex justify-between">
         <v-btn
             @click="loadItems"
             color="primary"
         >Filter</v-btn>
+          <v-btn
+              @click="openCreateForm"
+              color="green"
+          >New Product</v-btn>
       </v-col>
     </v-row>
     <v-data-table
@@ -51,6 +56,10 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
       </template>
     </v-data-table>
 
+    <create-product-form
+        @productCreated="handleProductCreated"
+        ref="createFormOpened"
+    ></create-product-form>
   </AuthenticatedLayout>
 </template>
 
@@ -81,6 +90,14 @@ export default {
   }),
 
   methods: {
+    openCreateForm() {
+      this.$refs.createFormOpened.openDialog();
+    },
+
+    handleProductCreated() {
+      this.loadItems();
+    },
+
     loadItems() {
       this.loading = true
       axios.get(route('admin.product.get'), {

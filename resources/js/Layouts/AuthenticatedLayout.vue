@@ -1,5 +1,6 @@
 <script setup>
 import MainMenu from "@/Components/MainMenu.vue";
+import Snackbar from "@/Components/Global/Snackbar.vue";
 
 </script>
 
@@ -11,5 +12,6 @@ import MainMenu from "@/Components/MainMenu.vue";
         <slot/>
       </v-container>
     </v-main>
+    <snackbar></snackbar>
   </v-app>
 </template>
