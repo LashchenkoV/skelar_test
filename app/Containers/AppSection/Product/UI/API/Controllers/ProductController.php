@@ -4,8 +4,10 @@ namespace App\Containers\AppSection\Product\UI\API\Controllers;
 
 use App\Containers\AppSection\Product\Actions\CreateProductAction;
 use App\Containers\AppSection\Product\Actions\DeleteProductAction;
+use App\Containers\AppSection\Product\Actions\EditProductAction;
 use App\Containers\AppSection\Product\Actions\GetFilteredPaginatedProductsAction;
 use App\Containers\AppSection\Product\UI\API\Requests\CreateProductRequest;
+use App\Containers\AppSection\Product\UI\API\Requests\EditProductRequest;
 use App\Containers\AppSection\Product\UI\API\Requests\GetFilteredProductsRequest;
 use App\Containers\AppSection\Product\UI\API\Transformers\ProductTransformer;
 use App\Ship\Parents\Controllers\ApiController;
@@ -26,6 +28,13 @@ class ProductController extends ApiController
         $product = app(CreateProductAction::class)->run($request->validated());
 
         // Just JsonResources can be used also
+        return $this->transform($product, ProductTransformer::class);
+    }
+
+    public function editProduct(EditProductRequest $request): array
+    {
+        $product = app(EditProductAction::class)->run($request->validated());
+
         return $this->transform($product, ProductTransformer::class);
     }
 

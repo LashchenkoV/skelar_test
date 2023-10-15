@@ -3,6 +3,7 @@
 import {Head} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import CreateProductForm from "@/Components/Product/CreateProductForm.vue";
+import EditProductForm from "@/Components/Product/EditProductForm.vue";
 </script>
 
 <template>
@@ -61,6 +62,13 @@ import CreateProductForm from "@/Components/Product/CreateProductForm.vue";
         ref="createFormOpened"
     ></create-product-form>
 
+    <edit-product-form
+        :product="editedProduct"
+        @productUpdated="handleProductUpdated"
+        ref="updateFormOpened"
+    >
+    </edit-product-form>
+
     <v-dialog v-model="dialogDelete" max-width="500px">
       <v-card>
         <v-card-title class="text-h5">Are you sure you want to delete this item?</v-card-title>
@@ -103,6 +111,7 @@ export default {
     quantity: '',
     dialogDelete: false,
     removeItem: {},
+    editedProduct: {},
   }),
 
   methods: {
@@ -137,6 +146,10 @@ export default {
       this.loadItems();
     },
 
+    handleProductUpdated() {
+      this.loadItems();
+    },
+
     loadItems() {
       this.loading = true
       axios.get(route('admin.product.get'), {
@@ -152,7 +165,8 @@ export default {
     },
 
     edit(item) {
-
+      this.editedProduct = item;
+      this.$refs.updateFormOpened.openDialog();
     },
 
     remove(item) {
