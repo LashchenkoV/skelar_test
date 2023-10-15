@@ -8,6 +8,13 @@ use Illuminate\Contracts\Database\Eloquent\Builder;
 
 class ProductsQueryBuilderTask extends QueryBuilderTask
 {
+    protected function handleSortBy(array $filters): void
+    {
+        foreach ($filters as $filter) {
+            $this->query->orderBy($filter['key'], $filter['order']);
+        }
+    }
+
     protected function handleName(string $name): void
     {
         $this->query->where('name', 'like', "%{$name}%");

@@ -7,8 +7,8 @@ use App\Ship\Parents\Actions\Action;
 
 class GetFilteredPaginatedProductsAction extends Action
 {
-    public function run(array $filters = [], int $perPage = 10)
+    public function run(array $filters = [])
     {
-        return app(ProductsQueryBuilderTask::class)->run($filters)->paginate($perPage);
+        return app(ProductsQueryBuilderTask::class)->run($filters)->paginate($filters['itemsPerPage']);
     }
 }

@@ -122,6 +122,7 @@ export default {
             this.dialog = false;
             this.$emit('productCreated', response.data);
             showSnackbar('Product has been successfully created');
+            this.$refs.productForm.reset();
           })
           .catch((error) => {
             console.log(error)

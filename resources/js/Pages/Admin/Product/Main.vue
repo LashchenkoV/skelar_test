@@ -31,7 +31,7 @@ import EditProductForm from "@/Components/Product/EditProductForm.vue";
       </v-col>
       <v-col class="d-flex justify-between">
         <v-btn
-            @click="loadItems"
+            @click="loadItems(this.tableOptions)"
             color="primary"
         >Filter</v-btn>
           <v-btn
@@ -40,22 +40,27 @@ import EditProductForm from "@/Components/Product/EditProductForm.vue";
           >New Product</v-btn>
       </v-col>
     </v-row>
-    <v-data-table
-        v-model:items-per-page="itemsPerPage"
+    <v-data-table-server
         :headers="headers"
-        :items-length="products?.meta?.pagination?.total ?? 0"
-        :items="products?.data ?? []"
+        :items="products?.data"
         :loading="loading"
+        :items-per-page-options="[2, 5, 10, 50, 100]"
+        :items-length="products?.meta?.pagination?.total ?? 1"
+        server-pagination
         class="elevation-1"
+        show-current-page
         @update:options="loadItems"
     >
+      <template v-slot:item.description="{ item }">
+        {{ truncateText(item.description) }}
+      </template>
       <template v-slot:item.actions="{ item }">
         <v-row>
           <v-col style="padding: 10px 5px"><v-btn @click="edit(item)" color="primary" size="small">Edit</v-btn></v-col>
           <v-col style="padding: 10px 5px"><v-btn @click="remove(item)" color="red" size="small">Remove</v-btn></v-col>
         </v-row>
       </template>
-    </v-data-table>
+    </v-data-table-server>
 
     <create-product-form
         @productCreated="handleProductCreated"
@@ -84,26 +89,24 @@ import EditProductForm from "@/Components/Product/EditProductForm.vue";
 </template>
 
 <script>
-import { VDataTable } from 'vuetify/labs/VDataTable'
+import { VDataTableServer } from 'vuetify/labs/VDataTable'
 import { useSnackbar } from "@/Components/Global/Snackbar.vue";
 const { showSnackbar } = useSnackbar();
 
 export default {
-  components: { VDataTable },
+  components: { VDataTableServer },
   data: () => ({
-    itemsPerPage: 15,
     headers: [
       {
         title: 'Id',
-        align: 'start',
-        sortable: false,
+        sortable: true,
         key: 'id',
       },
-      {title: 'Name', key: 'name', align: 'end'},
+      {title: 'Name', key: 'name', sortable: false},
       {title: 'Price', key: 'price', align: 'end'},
-      {title: 'Quantity', key: 'quantity', align: 'end'},
-      {title: 'Description', key: 'description', align: 'end'},
-      {title: 'Actions', key: 'actions', align: 'end'},
+      {title: 'Quantity', key: 'quantity', sortable: false},
+      {title: 'Description', key: 'description', sortable: false},
+      {title: 'Actions', key: 'actions', sortable: false},
     ],
     products: [],
     loading: true,
@@ -112,14 +115,26 @@ export default {
     dialogDelete: false,
     removeItem: {},
     editedProduct: {},
+    tableOptions: {
+      page: 1,
+      itemsPerPage: 10,
+      sortBy: []
+    }
   }),
 
   methods: {
+    truncateText(text) {
+      if (text.length > 200) {
+        return text.substring(0, 200) + '...';
+      }
+      return text;
+    },
+
     deleteItemConfirm () {
       axios.delete(route('admin.product.delete', {id: this.removeItem.id}))
           .then((response) => {
             if (response.data.result) {
-              this.loadItems();
+              this.loadItems(this.tableOptions);
               this.closeDelete()
               this.removeItem = {};
 
@@ -143,19 +158,22 @@ export default {
     },
 
     handleProductCreated() {
-      this.loadItems();
+      this.loadItems(this.tableOptions);
     },
 
     handleProductUpdated() {
-      this.loadItems();
+      this.loadItems(this.tableOptions);
     },
 
-    loadItems() {
+    loadItems(tableOptions) {
+      this.tableOptions = { ...this.tableOptions, ...tableOptions };
+
       this.loading = true
       axios.get(route('admin.product.get'), {
         params: {
           name: this.name === '' ? null : this.name,
-          quantity: this.quantity === '' ? null : this.quantity
+          quantity: this.quantity === '' ? null : this.quantity,
+          ...this.tableOptions
         }
       })
           .then((response) => {
